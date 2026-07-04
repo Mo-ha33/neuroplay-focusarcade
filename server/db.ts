@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, gameSessions, planetAttempts, InsertGameSession, InsertPlanetAttempt } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -90,3 +90,46 @@ export async function getUserByOpenId(openId: string) {
 }
 
 // TODO: add feature queries here as your schema grows.
+
+// ─── Game Session Helpers ─────────────────────────────────────────────────────
+
+export async function createGameSession(data: InsertGameSession) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(gameSessions).values(data);
+  return result[0].insertId as number;
+}
+
+export async function updateGameSession(id: number, data: Partial<InsertGameSession>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(gameSessions).set(data).where(eq(gameSessions.id, id));
+}
+
+export async function getGameSession(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(gameSessions).where(eq(gameSessions.id, id)).limit(1);
+  return result[0];
+}
+
+export async function getTopSessions(limit = 10) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(gameSessions)
+    .where(eq(gameSessions.completed, 1))
+    .limit(limit);
+}
+
+export async function recordPlanetAttempt(data: InsertPlanetAttempt) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(planetAttempts).values(data);
+  return result[0].insertId as number;
+}
+
+export async function getSessionAttempts(sessionId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(planetAttempts).where(eq(planetAttempts.sessionId, sessionId));
+}

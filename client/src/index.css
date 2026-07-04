@@ -4,10 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -23,7 +23,6 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -40,77 +39,85 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* NeuroPlay Brand Tokens */
+  --neon-cyan: #00E5FF;
+  --neon-purple: #7C4DFF;
+  --neon-lime: #AEEA00;
+  --space-navy: #0F172A;
+  --space-card: #1E293B;
+  --space-border: #334155;
 }
 
-:root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.235 0.015 65);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.235 0.015 65);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
-}
+@layer base {
+  :root {
+    --background: oklch(14% 0.02 250);
+    --foreground: oklch(95% 0.01 220);
+    --card: oklch(18% 0.03 250);
+    --card-foreground: oklch(95% 0.01 220);
+    --popover: oklch(18% 0.03 250);
+    --popover-foreground: oklch(95% 0.01 220);
+    --primary: oklch(88% 0.18 195);
+    --primary-foreground: oklch(14% 0.02 250);
+    --secondary: oklch(55% 0.22 290);
+    --secondary-foreground: oklch(98% 0 0);
+    --muted: oklch(22% 0.03 250);
+    --muted-foreground: oklch(65% 0.05 250);
+    --accent: oklch(88% 0.25 120);
+    --accent-foreground: oklch(14% 0.02 250);
+    --destructive: oklch(65% 0.22 25);
+    --border: oklch(28% 0.05 250);
+    --input: oklch(22% 0.03 250);
+    --ring: oklch(88% 0.18 195);
+    --chart-1: oklch(88% 0.18 195);
+    --chart-2: oklch(55% 0.22 290);
+    --chart-3: oklch(88% 0.25 120);
+    --chart-4: oklch(75% 0.18 50);
+    --chart-5: oklch(70% 0.2 340);
+    --radius: 1rem;
+    --sidebar: oklch(16% 0.025 250);
+    --sidebar-foreground: oklch(95% 0.01 220);
+    --sidebar-primary: oklch(88% 0.18 195);
+    --sidebar-primary-foreground: oklch(14% 0.02 250);
+    --sidebar-accent: oklch(22% 0.03 250);
+    --sidebar-accent-foreground: oklch(95% 0.01 220);
+    --sidebar-border: oklch(28% 0.05 250);
+    --sidebar-ring: oklch(88% 0.18 195);
+  }
 
-.dark {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-500);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.85 0.005 65);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.85 0.005 65);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.85 0.005 65);
-  --secondary: oklch(0.24 0.006 286.033);
-  --secondary-foreground: oklch(0.7 0.005 65);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground:  oklch(0.92 0.005 65);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.488 0.243 264.376);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.85 0.005 65);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground:  oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.488 0.243 264.376);
+  .dark {
+    --background: oklch(14% 0.02 250);
+    --foreground: oklch(95% 0.01 220);
+    --card: oklch(18% 0.03 250);
+    --card-foreground: oklch(95% 0.01 220);
+    --popover: oklch(18% 0.03 250);
+    --popover-foreground: oklch(95% 0.01 220);
+    --primary: oklch(88% 0.18 195);
+    --primary-foreground: oklch(14% 0.02 250);
+    --secondary: oklch(55% 0.22 290);
+    --secondary-foreground: oklch(98% 0 0);
+    --muted: oklch(22% 0.03 250);
+    --muted-foreground: oklch(65% 0.05 250);
+    --accent: oklch(88% 0.25 120);
+    --accent-foreground: oklch(14% 0.02 250);
+    --destructive: oklch(65% 0.22 25);
+    --border: oklch(28% 0.05 250);
+    --input: oklch(22% 0.03 250);
+    --ring: oklch(88% 0.18 195);
+    --chart-1: oklch(88% 0.18 195);
+    --chart-2: oklch(55% 0.22 290);
+    --chart-3: oklch(88% 0.25 120);
+    --chart-4: oklch(75% 0.18 50);
+    --chart-5: oklch(70% 0.2 340);
+    --sidebar: oklch(16% 0.025 250);
+    --sidebar-foreground: oklch(95% 0.01 220);
+    --sidebar-primary: oklch(88% 0.18 195);
+    --sidebar-primary-foreground: oklch(14% 0.02 250);
+    --sidebar-accent: oklch(22% 0.03 250);
+    --sidebar-accent-foreground: oklch(95% 0.01 220);
+    --sidebar-border: oklch(28% 0.05 250);
+    --sidebar-ring: oklch(88% 0.18 195);
+  }
 }
 
 @layer base {
@@ -119,59 +126,141 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Comfortaa', 'Poppins', sans-serif;
+    background-color: #0F172A;
+    color: #E2E8F0;
+    overflow-x: hidden;
   }
-  button:not(:disabled),
-  [role="button"]:not([aria-disabled="true"]),
-  [type="button"]:not(:disabled),
-  [type="submit"]:not(:disabled),
-  [type="reset"]:not(:disabled),
-  a[href],
-  select:not(:disabled),
-  input[type="checkbox"]:not(:disabled),
-  input[type="radio"]:not(:disabled) {
-    @apply cursor-pointer;
-  }
-}
 
-@layer components {
-  /**
-   * Custom container utility that centers content and adds responsive padding.
-   *
-   * This overrides Tailwind's default container behavior to:
-   * - Auto-center content (mx-auto)
-   * - Add responsive horizontal padding
-   * - Set max-width for large screens
-   *
-   * Usage: <div className="container">...</div>
-   *
-   * For custom widths, use max-w-* utilities directly:
-   * <div className="max-w-6xl mx-auto px-4">...</div>
-   */
   .container {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem; /* 16px - mobile padding */
-    padding-right: 1rem;
+    @apply mx-auto px-4;
   }
 
   .flex {
-    min-height: 0;
     min-width: 0;
+    min-height: 0;
   }
 
-  @media (min-width: 640px) {
-    .container {
-      padding-left: 1.5rem; /* 24px - tablet padding */
-      padding-right: 1.5rem;
-    }
+  /* NeuroPlay Font Utilities */
+  .font-comfortaa { font-family: 'Comfortaa', sans-serif; }
+  .font-poppins { font-family: 'Poppins', sans-serif; }
+
+  /* Neon glow effects */
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.4), 0 0 40px rgba(0, 229, 255, 0.2);
+  }
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(124, 77, 255, 0.4), 0 0 40px rgba(124, 77, 255, 0.2);
+  }
+  .glow-lime {
+    box-shadow: 0 0 20px rgba(174, 234, 0, 0.4), 0 0 40px rgba(174, 234, 0, 0.2);
+  }
+  .text-glow-cyan { text-shadow: 0 0 20px rgba(0, 229, 255, 0.8); }
+  .text-glow-lime { text-shadow: 0 0 20px rgba(174, 234, 0, 0.8); }
+  .text-glow-purple { text-shadow: 0 0 20px rgba(124, 77, 255, 0.8); }
+
+  /* Drag-and-drop states */
+  .dragging { opacity: 0.5; transform: scale(1.05); cursor: grabbing; }
+  .drag-over { border-color: #00E5FF !important; box-shadow: 0 0 30px rgba(0, 229, 255, 0.6) !important; }
+  .drop-correct { border-color: #AEEA00 !important; box-shadow: 0 0 30px rgba(174, 234, 0, 0.7) !important; }
+  .drop-wrong { border-color: #ff4444 !important; animation: shake 0.4s ease-in-out; }
+
+  /* Animations */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
   }
 
-  @media (min-width: 1024px) {
-    .container {
-      padding-left: 2rem; /* 32px - desktop padding */
-      padding-right: 2rem;
-      max-width: 1280px; /* Standard content width */
-    }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
   }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
+    50% { box-shadow: 0 0 30px rgba(0, 229, 255, 0.8), 0 0 60px rgba(0, 229, 255, 0.4); }
+  }
+
+  @keyframes star-pop {
+    0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+    60% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  @keyframes xp-rise {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-60px); opacity: 0; }
+  }
+
+  @keyframes level-up {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.4); opacity: 1; }
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes bounce-in {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.1); }
+    70% { transform: scale(0.95); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes trophy-reveal {
+    0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+    60% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes progress-fill {
+    from { width: var(--from-width, 0%); }
+    to { width: var(--to-width, 100%); }
+  }
+
+  @keyframes score-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); color: #AEEA00; }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes ring-pulse {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+
+  .animate-float { animation: float 3s ease-in-out infinite; }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+  .animate-star-pop { animation: star-pop 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+  .animate-xp-rise { animation: xp-rise 1.2s ease-out forwards; }
+  .animate-level-up { animation: level-up 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+  .animate-breathe { animation: breathe 4s ease-in-out infinite; }
+  .animate-slide-up { animation: slide-up 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+  .animate-bounce-in { animation: bounce-in 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+  .animate-twinkle { animation: twinkle 2s ease-in-out infinite; }
+  .animate-trophy { animation: trophy-reveal 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+  .animate-spin-slow { animation: spin-slow 8s linear infinite; }
+  .animate-score-pop { animation: score-pop 0.4s ease-out; }
+  .animate-ring-pulse { animation: ring-pulse 0.8s ease-out forwards; }
 }
