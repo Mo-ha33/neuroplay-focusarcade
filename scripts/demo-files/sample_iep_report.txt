@@ -1,0 +1,42 @@
+INDIVIDUALIZED EDUCATION PROGRAM (IEP)
+Focus & Attention Recommendations
+===================================
+
+Student: Alex Rivera
+Grade: 3rd Grade
+Date: June 2026
+Specialist: Dr. Sarah Chen, Child Psychologist
+
+DIAGNOSIS: ADHD-Combined Type (314.01)
+
+ATTENTION SPAN ASSESSMENT:
+- Sustained attention: 7-10 minutes before drift
+- Visual attention: Strong (above average)
+- Auditory attention: Below average (requires visual supports)
+
+RECOMMENDED ACCOMMODATIONS:
+1. Break tasks into 5-7 minute micro-segments
+2. Provide motor breaks every 8-10 minutes
+3. Use visual/tactile learning over text-heavy materials
+4. Implement immediate positive reinforcement (within 3 seconds)
+5. Reduce visual clutter in learning materials
+6. Allow fidget tools during seated activities
+
+POMODORO RECOMMENDATIONS:
+- Work interval: 10 minutes maximum
+- Break interval: 5 minutes (physical activity preferred)
+- Sessions per day: 3-4 maximum
+- Best focus time: 9:00 AM - 11:00 AM
+
+SENSORY ACCOMMODATIONS:
+- Reduced motion in digital interfaces
+- High contrast text preferred
+- Avoid flashing or rapidly changing visuals
+- Soft, rounded visual elements preferred over sharp edges
+- Calming color palette (blues, greens) over warm stimulating colors
+
+DIFFICULTY LEVEL: Adaptive
+- Start at 60% success rate threshold
+- Increase difficulty only after 3 consecutive successes
+- Decrease difficulty after 2 consecutive failures
+- Never present more than 1 task at a time on screen

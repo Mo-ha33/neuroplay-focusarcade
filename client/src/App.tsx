@@ -4,13 +4,30 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { RbacProvider } from "./contexts/RbacContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
+import StudentPortal from "./pages/StudentPortal";
+import TeacherPortal from "./pages/TeacherPortal";
+import ParentPortal from "./pages/ParentPortal";
+import AdminPortal from "./pages/AdminPortal";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
+      {/* Default: SpaceLab game (unauthenticated entry point) */}
       <Route path={"/"} component={Home} />
+
+      {/* RBAC Login — unified role-selector login page */}
+      <Route path={"/login"} component={Login} />
+
+      {/* Role-specific portals */}
+      <Route path={"/student"} component={StudentPortal} />
+      <Route path={"/teacher"} component={TeacherPortal} />
+      <Route path={"/parent"} component={ParentPortal} />
+      <Route path={"/admin"} component={AdminPortal} />
+
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -18,22 +35,19 @@ function Router() {
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="dark"
-      >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider defaultTheme="dark">
+          <RbacProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </RbacProvider>
+        </ThemeProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   );
 }

@@ -11,7 +11,8 @@ import { CompletionScreen } from "./CompletionScreen";
 import { GameHUD } from "./GameHUD";
 import { OrbitSlot } from "./OrbitSlot";
 import { PlanetToken } from "./PlanetToken";
-import { PLANETS } from "../../data/planets";
+import { PLANETS, localStr } from "../../data/planets";
+import { useLanguage } from "../../contexts/LanguageContext";
 import { fireConfetti, fireStarBurst } from "../../lib/confetti";
 
 export function SpaceLabGame() {
@@ -31,6 +32,8 @@ export function SpaceLabGame() {
     isLoading,
   } = useGameState();
 
+  const { lang, isRTL } = useLanguage();
+  const fontFamily = lang === "ar" ? "'Cairo', 'Almarai', sans-serif" : "'Comfortaa', sans-serif";
   const [studentName, setStudentName] = useState("Space Explorer");
   const [showCorrectFlash, setShowCorrectFlash] = useState(false);
   // Mobile: tap-to-select then tap-orbit
@@ -172,15 +175,16 @@ export function SpaceLabGame() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center py-2 text-sm font-bold"
-          style={{
-            fontFamily: "'Comfortaa', sans-serif",
-            color: "#AEEA00",
-            background: "rgba(174, 234, 0, 0.08)",
-            borderBottom: "1px solid rgba(174, 234, 0, 0.2)",
-          }}
+            style={{
+              fontFamily,
+              color: "#AEEA00",
+              background: "rgba(174, 234, 0, 0.08)",
+              borderBottom: "1px solid rgba(174, 234, 0, 0.2)",
+              direction: isRTL ? "rtl" : "ltr",
+            }}
         >
-          ✨ Now tap an orbit slot to place{" "}
-          {PLANETS.find(p => p.id === selectedPlanetId)?.name}!
+          ✨ {lang === "ar" ? "الآن اضغط على مدار لوضع" : "Now tap an orbit slot to place"}{" "}
+          {localStr(PLANETS.find(p => p.id === selectedPlanetId)?.name ?? { en: "", ar: "" }, lang)}!
         </motion.div>
       )}
 
@@ -218,9 +222,17 @@ export function SpaceLabGame() {
           >
             <p
               className="text-sm font-bold"
-              style={{ fontFamily: "'Comfortaa', sans-serif", color: "#94A3B8" }}
+              style={{ fontFamily, color: "#94A3B8" }}
             >
-              {state.correctCount === 0
+              {lang === "ar"
+                ? state.correctCount === 0
+                  ? "اسحب الكوكب إلى مداره! 🚀"
+                  : state.correctCount < 4
+                  ? `أحسنت! تبقى ${8 - state.correctCount} كواكب! ⭐`
+                  : state.correctCount < 7
+                  ? `رائع! أوشكت على الانتهاء! 🌟`
+                  : `كوكب أخير! أنت قادر! 🏆`
+                : state.correctCount === 0
                 ? "Drag the planet to its orbit! 🚀"
                 : state.correctCount < 4
                 ? `Great job! ${8 - state.correctCount} more to go! ⭐`
@@ -250,9 +262,9 @@ export function SpaceLabGame() {
             </div>
             <span
               className="text-xs font-bold"
-              style={{ fontFamily: "'Comfortaa', sans-serif", color: "#FFD700" }}
+              style={{ fontFamily, color: "#FFD700" }}
             >
-              The Sun
+              {lang === "ar" ? "الشمس" : "The Sun"}
             </span>
           </motion.div>
 
@@ -260,9 +272,11 @@ export function SpaceLabGame() {
           <div className="w-full">
             <p
               className="text-center text-xs font-bold mb-3"
-              style={{ fontFamily: "'Comfortaa', sans-serif", color: "#475569" }}
+              style={{ fontFamily, color: "#475569" }}
             >
-              ← Closest to Sun · · · · · · · Farthest from Sun →
+              {lang === "ar"
+                ? "← الأبعد عن الشمس · · · · · · · الأقرب من الشمس →"
+                : "← Closest to Sun · · · · · · · Farthest from Sun →"}
             </p>
             <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
               {PLANETS.map(planet => {
@@ -299,9 +313,9 @@ export function SpaceLabGame() {
           >
             <p
               className="text-xs font-bold text-center mb-2"
-              style={{ fontFamily: "'Comfortaa', sans-serif", color: "#475569" }}
+              style={{ fontFamily, color: "#475569" }}
             >
-              Planets placed correctly:
+              {lang === "ar" ? "الكواكب الموضوعة بشكل صحيح:" : "Planets placed correctly:"}
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
               {state.placedPlanets.map(placed => {
@@ -316,19 +330,19 @@ export function SpaceLabGame() {
                       background: `${p.color}20`,
                       border: `1px solid ${p.color}60`,
                       color: p.color,
-                      fontFamily: "'Comfortaa', sans-serif",
+                      fontFamily,
                     }}
                   >
-                    ✓ {p.name}
+                    ✓ {localStr(p.name, lang)}
                   </motion.span>
                 ) : null;
               })}
               {state.placedPlanets.length === 0 && (
                 <span
                   className="text-xs"
-                  style={{ color: "#334155", fontFamily: "'Comfortaa', sans-serif" }}
+                  style={{ color: "#334155", fontFamily }}
                 >
-                  None yet — start dragging! 🪐
+                  {lang === "ar" ? "لا يوجد بعد — ابدأ بالسحب! 🪐" : "None yet — start dragging! 🪐"}
                 </span>
               )}
             </div>
@@ -346,9 +360,9 @@ export function SpaceLabGame() {
           >
             <p
               className="text-sm font-bold text-center mb-4"
-              style={{ fontFamily: "'Comfortaa', sans-serif", color: "#7C4DFF" }}
+              style={{ fontFamily, color: "#7C4DFF" }}
             >
-              🪐 Planet Tray
+              🪐 {lang === "ar" ? "صينية الكواكب" : "Planet Tray"}
             </p>
             {/* Horizontal scroll on mobile, grid on desktop */}
             <div className="flex gap-3 overflow-x-auto pb-2 lg:grid lg:grid-cols-2 lg:overflow-visible">
@@ -381,9 +395,9 @@ export function SpaceLabGame() {
           >
             <p
               className="text-xs font-bold"
-              style={{ fontFamily: "'Comfortaa', sans-serif", color: "#00E5FF" }}
+              style={{ fontFamily, color: "#00E5FF" }}
             >
-              💡 Drag to orbit slot, or tap planet then tap slot!
+              💡 {lang === "ar" ? "اسحب إلى المدار، أو اضغط على الكوكب ثم على المدار!" : "Drag to orbit slot, or tap planet then tap slot!"}
             </p>
           </div>
         </div>

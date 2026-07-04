@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { motion } from "framer-motion";
-import { Planet } from "../../data/planets";
+import { Planet, localStr } from "../../data/planets";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface PlanetTokenProps {
   planet: Planet;
@@ -13,6 +14,9 @@ interface PlanetTokenProps {
 
 export function PlanetToken({ planet, isActive, isPlaced, isSelected = false, onDragStart, onDragEnd }: PlanetTokenProps) {
   const dragRef = useRef<HTMLDivElement>(null);
+  const { lang } = useLanguage();
+  const fontFamily = lang === "ar" ? "'Cairo', 'Almarai', sans-serif" : "'Comfortaa', sans-serif";
+  const placedLabel = lang === "ar" ? "✓ تم الوضع" : "✓ Placed";
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData("planetId", planet.id);
@@ -47,9 +51,9 @@ export function PlanetToken({ planet, isActive, isPlaced, isSelected = false, on
         </div>
         <span
           className="text-xs font-bold"
-          style={{ fontFamily: "'Comfortaa', sans-serif", color: "#334155" }}
+          style={{ fontFamily, color: "#334155" }}
         >
-          ✓ Placed
+          {placedLabel}
         </span>
       </div>
     );
@@ -104,13 +108,13 @@ export function PlanetToken({ planet, isActive, isPlaced, isSelected = false, on
       <span
         className="text-xs font-bold text-center"
         style={{
-          fontFamily: "'Comfortaa', sans-serif",
+          fontFamily,
           color: isActive ? planet.color : "#94A3B8",
           maxWidth: "64px",
           lineHeight: "1.2",
         }}
       >
-        {planet.name}
+        {localStr(planet.name, lang)}
       </span>
     </div>
     </motion.div>

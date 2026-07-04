@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Planet } from "../../data/planets";
+import { Planet, localStr } from "../../data/planets";
 import { AudioReadButton } from "./AudioReadButton";
 import { GalacticFactPanel } from "./GalacticFactPanel";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface ClueCardProps {
   planet: Planet;
@@ -12,15 +13,31 @@ interface ClueCardProps {
 }
 
 export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCardProps) {
-  const currentClue = planet.clues[clueIndex];
+  const { lang, isRTL } = useLanguage();
+  const fontFamily = lang === "ar"
+    ? "'Cairo', 'Almarai', sans-serif"
+    : "'Comfortaa', sans-serif";
+
+  const currentClueObj = planet.clues[clueIndex];
+  const currentClue = localStr(currentClueObj, lang);
   const hasMoreClues = clueIndex < planet.clues.length - 1;
   const clueNumber = clueIndex + 1;
   const totalClues = planet.clues.length;
   const isLastClue = clueIndex === planet.clues.length - 1;
   const [showFact, setShowFact] = useState(false);
 
+  const labels = {
+    clueOf: lang === "ar" ? `تلميح ${clueNumber} من ${totalClues}` : `Clue ${clueNumber} of ${totalClues}`,
+    tryNum: lang === "ar" ? `محاولة #${attemptCount}` : `Try #${attemptCount}`,
+    nextClue: lang === "ar" ? "التلميح التالي 💡" : "Next Clue 💡",
+    galacticFact: lang === "ar" ? "حقيقة كونية" : "Galactic Fact",
+    dragInstruction: lang === "ar" ? "اسحبني إلى المدار الصحيح! ☝️" : "Drag me to the right orbit! ☝️",
+    listenToClue: lang === "ar" ? "استمع للتلميح" : "Listen to Clue",
+  };
+
   return (
     <motion.div
+      dir={isRTL ? "rtl" : "ltr"}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
@@ -39,25 +56,25 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
           <span
             className="text-xs font-bold px-3 py-1 rounded-full"
             style={{
-              fontFamily: "'Comfortaa', sans-serif",
+              fontFamily,
               background: "rgba(124, 77, 255, 0.2)",
               color: "#7C4DFF",
               border: "1px solid rgba(124, 77, 255, 0.4)",
             }}
           >
-            Clue {clueNumber} of {totalClues}
+            {labels.clueOf}
           </span>
           {attemptCount > 1 && (
             <span
               className="text-xs font-bold px-3 py-1 rounded-full"
               style={{
-                fontFamily: "'Comfortaa', sans-serif",
+                fontFamily,
                 background: "rgba(255, 100, 100, 0.15)",
                 color: "#FF6B6B",
                 border: "1px solid rgba(255, 100, 100, 0.3)",
               }}
             >
-              Try #{attemptCount}
+              {labels.tryNum}
             </span>
           )}
         </div>
@@ -83,28 +100,45 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
           </motion.div>
         </div>
 
+        {/* Planet name badge */}
+        <div className="flex justify-center">
+          <span
+            className="text-base font-black px-4 py-1 rounded-full"
+            style={{
+              fontFamily,
+              color: planet.color,
+              background: `${planet.color}18`,
+              border: `1px solid ${planet.color}50`,
+              letterSpacing: lang === "ar" ? "0" : "0.02em",
+            }}
+          >
+            {localStr(planet.name, lang)}
+          </span>
+        </div>
+
         {/* Clue text — ONE at a time */}
         <AnimatePresence mode="wait">
           <motion.div
             key={clueIndex}
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center gap-3"
           >
             <p
               className="text-xl font-bold leading-relaxed text-center"
               style={{
-                fontFamily: "'Comfortaa', sans-serif",
+                fontFamily,
                 color: "#E2E8F0",
-                lineHeight: "1.5",
+                lineHeight: "1.6",
+                direction: isRTL ? "rtl" : "ltr",
               }}
             >
               {currentClue}
             </p>
             {/* 🔊 TTS Audio Read Button — accessibility for neurodivergent learners */}
-            <AudioReadButton text={currentClue} label="Listen to Clue" size="sm" />
+            <AudioReadButton text={currentClue} label={labels.listenToClue} size="sm" />
           </motion.div>
         </AnimatePresence>
 
@@ -131,13 +165,13 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
             onClick={onNextClue}
             className="w-full py-3 rounded-2xl font-bold text-sm transition-all duration-200"
             style={{
-              fontFamily: "'Comfortaa', sans-serif",
+              fontFamily,
               background: "rgba(124, 77, 255, 0.15)",
               border: "1.5px solid rgba(124, 77, 255, 0.5)",
               color: "#7C4DFF",
             }}
           >
-            Next Clue 💡
+            {labels.nextClue}
           </motion.button>
         )}
 
@@ -152,14 +186,14 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
             onClick={() => setShowFact(true)}
             className="w-full py-2.5 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
             style={{
-              fontFamily: "'Comfortaa', sans-serif",
+              fontFamily,
               background: "rgba(0, 229, 255, 0.08)",
               border: "1.5px solid rgba(0, 229, 255, 0.3)",
               color: "#00E5FF",
             }}
           >
             <span>📡</span>
-            <span>Galactic Fact</span>
+            <span>{labels.galacticFact}</span>
           </motion.button>
         )}
 
@@ -167,11 +201,11 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
         <p
           className="text-center text-xs font-semibold"
           style={{
-            fontFamily: "'Comfortaa', sans-serif",
+            fontFamily,
             color: "#64748B",
           }}
         >
-          Drag me to the right orbit! ☝️
+          {labels.dragInstruction}
         </p>
       </div>
 
