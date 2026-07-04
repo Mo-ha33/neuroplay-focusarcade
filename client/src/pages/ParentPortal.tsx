@@ -8,6 +8,7 @@
 import { useLocation } from "wouter";
 import { useRbac } from "@/contexts/RbacContext";
 import { trpc } from "@/lib/trpc";
+import { ParentUploadZone } from "@/components/uploads";
 
 const MOOD_CONFIG = {
   superstar:   { emoji: "🌟", label: "Superstar!",   color: "#FFD700" },
@@ -92,6 +93,9 @@ export default function ParentPortal() {
         <p style={{ color: "#64748B", fontSize: 13, marginBottom: 24 }}>
           {metrics?.childName}'s learning journey at a glance
         </p>
+
+        {/* IEP & Clinical Report Upload */}
+        <ParentUploadZone />
 
         {/* Key Metrics */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12, marginBottom: 24 }}>

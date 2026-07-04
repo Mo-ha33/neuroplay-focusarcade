@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useRbac } from "@/contexts/RbacContext";
 import { SpaceLabGame } from "@/components/game/SpaceLabGame";
+import { StudentUploadZone } from "@/components/uploads";
 
 export default function StudentPortal() {
   const { user, logout } = useRbac();
@@ -147,6 +148,9 @@ export default function StudentPortal() {
             🚀 Launch Mission!
           </button>
         </div>
+
+        {/* Space Scanner Station — Homework Upload */}
+        <StudentUploadZone />
 
         {/* Stats Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>

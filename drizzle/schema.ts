@@ -131,3 +131,47 @@ export const planetAttempts = mysqlTable("planet_attempts", {
 
 export type PlanetAttempt = typeof planetAttempts.$inferSelect;
 export type InsertPlanetAttempt = typeof planetAttempts.$inferInsert;
+
+// ─── File Uploads ────────────────────────────────────────────────────────────
+
+export const uploads = mysqlTable("uploads", {
+  id: int("id").autoincrement().primaryKey(),
+  /** References users.id for the uploader. */
+  userId: int("userId").notNull(),
+  /** Original file name as uploaded by the user. */
+  fileName: varchar("fileName", { length: 512 }).notNull(),
+  /** Storage key or URL for the persisted file. */
+  fileUrl: text("fileUrl"),
+  /**
+   * File type category — determines which portal uploaded it and how it's processed.
+   * - curriculum_pdf: Teacher-uploaded curriculum for AI quest generation
+   * - parent_iep_report: Parent-uploaded IEP or clinical recommendations
+   * - student_homework: Student-uploaded homework image/screenshot
+   */
+  fileType: mysqlEnum("fileType", [
+    "curriculum_pdf",
+    "parent_iep_report",
+    "student_homework",
+  ]).notNull(),
+  /** MIME type of the uploaded file. */
+  mimeType: varchar("mimeType", { length: 128 }),
+  /** File size in bytes. */
+  fileSizeBytes: int("fileSizeBytes"),
+  /**
+   * Processing status for AI ingestion pipeline.
+   * - pending: Just uploaded, awaiting processing
+   * - processing: AI is currently parsing/analyzing
+   * - completed: Successfully processed
+   * - failed: Processing encountered an error
+   */
+  status: mysqlEnum("status", ["pending", "processing", "completed", "failed"])
+    .default("pending")
+    .notNull(),
+  /** JSON metadata from AI processing (quest output, IEP parameters, XP awarded, etc.) */
+  aiMetadata: text("aiMetadata"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Upload = typeof uploads.$inferSelect;
+export type InsertUpload = typeof uploads.$inferInsert;

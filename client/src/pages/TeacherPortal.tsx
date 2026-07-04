@@ -8,6 +8,7 @@
 import { useLocation } from "wouter";
 import { useRbac } from "@/contexts/RbacContext";
 import { trpc } from "@/lib/trpc";
+import { TeacherUploadZone } from "@/components/uploads";
 
 const STATUS_CONFIG = {
   active:         { color: "#00E5FF", label: "Active",        dot: "🟢" },
@@ -86,6 +87,9 @@ export default function TeacherPortal() {
         <h1 style={{ color: "#E2E8F0", fontSize: 20, fontWeight: 700, marginBottom: 20 }}>
           🏫 Classroom Command Center
         </h1>
+
+        {/* AI Curriculum Ingestion Engine */}
+        <TeacherUploadZone />
 
         {/* Stats Overview */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 28 }}>

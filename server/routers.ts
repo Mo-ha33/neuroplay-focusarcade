@@ -4,6 +4,7 @@ import { rbacRouter } from "./routers/rbacRouter";
 import { teacherRouter } from "./routers/teacherRouter";
 import { parentRouter } from "./routers/parentRouter";
 import { adminRouter } from "./routers/adminRouter";
+import { filesRouter } from "./routers/filesRouter";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
@@ -26,6 +27,7 @@ export const appRouter = router({
   teacher: teacherRouter,
   parent: parentRouter,
   admin: adminRouter,
+  files: filesRouter,
 
   // ── AI Resilience: multi-model chat with Gemini → OpenRouter → Groq → static fallback
   ai: router({
