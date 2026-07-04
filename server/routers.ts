@@ -15,6 +15,12 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { z } from "zod";
+import { rbacRouter } from "./routers/rbacRouter";
+import { teacherRouter } from "./routers/teacherRouter";
+import { parentRouter } from "./routers/parentRouter";
+import { adminRouter as rbacAdminRouter } from "./routers/adminRouter";
+import { filesRouter } from "./routers/filesRouter";
+import { mergeRouters } from "./_core/trpc";
 import {
   createGameSession,
   updateGameSession,
@@ -33,6 +39,10 @@ import { seedMockStudentData } from "./mockDataSeed";
 
 export const appRouter = router({
   system: systemRouter,
+  rbac: rbacRouter,
+  teacher: teacherRouter,
+  parent: parentRouter,
+  files: filesRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -256,35 +266,38 @@ export const appRouter = router({
       }),
   }),
 
-  admin: router({
-    seedMockData: publicProcedure.mutation(async () => {
-      audit.info("mock_data", "Admin triggered mock data seed");
-      return seedMockStudentData();
+  admin: mergeRouters(
+    rbacAdminRouter,
+    router({
+      seedMockData: publicProcedure.mutation(async () => {
+        audit.info("mock_data", "Admin triggered mock data seed");
+        return seedMockStudentData();
+      }),
+
+      getAuditSummary: publicProcedure.query(() => {
+        const logs = getRecentAuditLogs(200);
+        const summary = {
+          totalEvents: logs.length,
+          byCategory: {} as Record<string, number>,
+          byLevel: {} as Record<string, number>,
+          recentErrors: logs.filter(l => l.level === "ERROR").slice(-5),
+          successRate: 0,
+        };
+
+        for (const log of logs) {
+          summary.byCategory[log.category] = (summary.byCategory[log.category] ?? 0) + 1;
+          summary.byLevel[log.level] = (summary.byLevel[log.level] ?? 0) + 1;
+        }
+
+        const successes = summary.byLevel["SUCCESS"] ?? 0;
+        const errors = summary.byLevel["ERROR"] ?? 0;
+        const total = successes + errors;
+        summary.successRate = total > 0 ? Math.round((successes / total) * 100) : 100;
+
+        return summary;
+      }),
     }),
-
-    getAuditSummary: publicProcedure.query(() => {
-      const logs = getRecentAuditLogs(200);
-      const summary = {
-        totalEvents: logs.length,
-        byCategory: {} as Record<string, number>,
-        byLevel: {} as Record<string, number>,
-        recentErrors: logs.filter(l => l.level === "ERROR").slice(-5),
-        successRate: 0,
-      };
-
-      for (const log of logs) {
-        summary.byCategory[log.category] = (summary.byCategory[log.category] ?? 0) + 1;
-        summary.byLevel[log.level] = (summary.byLevel[log.level] ?? 0) + 1;
-      }
-
-      const successes = summary.byLevel["SUCCESS"] ?? 0;
-      const errors = summary.byLevel["ERROR"] ?? 0;
-      const total = successes + errors;
-      summary.successRate = total > 0 ? Math.round((successes / total) * 100) : 100;
-
-      return summary;
-    }),
-  }),
+  ),
 });
 
 export type AppRouter = typeof appRouter;

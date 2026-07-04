@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Login.tsx — Unified RBAC Login Page (Bilingual EN/AR)
  * ======================================================

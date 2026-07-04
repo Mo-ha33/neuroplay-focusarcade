@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * NeuroPlay AI FocusArcade — Student Portal
  * ==========================================

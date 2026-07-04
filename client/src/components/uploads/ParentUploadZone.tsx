@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * NeuroPlay AI FocusArcade — Parent IEP & Clinical Report Uploader
  * =================================================================

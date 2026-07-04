@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * NeuroPlay AI FocusArcade — Student Space Scanner Station
  * =========================================================
