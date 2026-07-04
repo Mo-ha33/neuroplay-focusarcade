@@ -1,6 +1,8 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGameState } from "../../hooks/useGameState";
+import { useIngestionConfig } from "../../hooks/useIngestionConfig";
+import { ContentStudio } from "../ContentStudio";
 import { WelcomeScreen } from "./WelcomeScreen";
 import { ClueCard } from "./ClueCard";
 import { BrainBreak } from "./BrainBreak";
@@ -13,6 +15,10 @@ import { PLANETS } from "../../data/planets";
 import { fireConfetti, fireStarBurst } from "../../lib/confetti";
 
 export function SpaceLabGame() {
+  // ── Phase A: Ingestion Hub state ──────────────────────────────────────────
+  const { ingestionState, submitConfig, resetIngestion } = useIngestionConfig();
+
+  // ── Existing game state (untouched) ──────────────────────────────────────
   const {
     state,
     startGame,
@@ -70,14 +76,12 @@ export function SpaceLabGame() {
     }
   }, [selectedPlanetId, handleDropWithFeedback]);
 
-  const currentPlanet = state.shuffledPlanets[state.currentPlanetIndex];
-  const placedPlanetIds = new Set(state.placedPlanets.map(p => p.planetId));
-  const attemptCounts: Record<string, number> = {};
+  // ── Phase A gate: show ContentStudio before anything else ─────────────────
+  if (ingestionState.phase === "ingestion") {
+    return <ContentStudio onLaunch={submitConfig} />;
+  }
 
-  const timeSpentSec = state.startTime
-    ? Math.floor((Date.now() - state.startTime) / 1000)
-    : 0;
-
+  // ── Existing phase routing (completely unchanged) ─────────────────────────
   if (state.phase === "welcome") {
     return <WelcomeScreen onStart={handleStart} isLoading={isLoading} />;
   }
@@ -89,11 +93,27 @@ export function SpaceLabGame() {
         totalStars={state.totalStars}
         totalXP={state.totalXP}
         score={state.score}
-        timeSpentSec={timeSpentSec}
-        onPlayAgain={restartGame}
+        timeSpentSec={
+          state.startTime
+            ? Math.floor((Date.now() - state.startTime) / 1000)
+            : 0
+        }
+        onPlayAgain={() => {
+          restartGame();
+          // Optionally return to ingestion for a new curriculum:
+          // resetIngestion();
+        }}
       />
     );
   }
+
+  const currentPlanet = state.shuffledPlanets[state.currentPlanetIndex];
+  const placedPlanetIds = new Set(state.placedPlanets.map(p => p.planetId));
+  const attemptCounts: Record<string, number> = {};
+
+  const timeSpentSec = state.startTime
+    ? Math.floor((Date.now() - state.startTime) / 1000)
+    : 0;
 
   return (
     <div
