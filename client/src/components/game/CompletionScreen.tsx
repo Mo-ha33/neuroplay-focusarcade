@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { fireMegaConfetti } from "../../lib/confetti";
 import { PLANETS } from "../../data/planets";
+import { StudentAvatar } from "./StudentAvatar";
 
 interface CompletionScreenProps {
   studentName: string;
@@ -72,12 +73,15 @@ export function CompletionScreen({
           🏆
         </motion.div>
 
-        {/* Title */}
+        {/* DiceBear Avatar + Title */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
+          className="flex flex-col items-center gap-3"
         >
+          {/* DiceBear sci-fi avatar — prominent on completion screen */}
+          <StudentAvatar seed={studentName} size={72} glow={true} float={true} />
           <h1
             className="text-4xl font-black mb-2"
             style={{

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { StudentAvatar } from "./StudentAvatar";
 
 interface WelcomeScreenProps {
   onStart: (name: string) => void;
@@ -94,7 +95,7 @@ export function WelcomeScreen({ onStart, isLoading }: WelcomeScreenProps) {
           </p>
         </motion.div>
 
-        {/* Name input */}
+        {/* Name input with live DiceBear avatar preview */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -107,6 +108,16 @@ export function WelcomeScreen({ onStart, isLoading }: WelcomeScreenProps) {
           >
             What's your name, Space Explorer?
           </label>
+          {/* Live avatar preview — updates as user types */}
+          {name.trim().length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex justify-center mb-3"
+            >
+              <StudentAvatar seed={name.trim()} size={56} glow={true} float={true} />
+            </motion.div>
+          )}
           <input
             type="text"
             value={name}

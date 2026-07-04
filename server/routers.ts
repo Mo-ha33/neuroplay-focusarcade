@@ -17,6 +17,33 @@ import { parseCurriculumToQuests, parseGoogleDriveDocument } from "./integration
 
 export const appRouter = router({
   system: systemRouter,
+
+  // ── AI Resilience: multi-model chat with Gemini → OpenRouter → Groq → static fallback
+  ai: router({
+    chat: publicProcedure
+      .input(
+        z.object({
+          messages: z.array(
+            z.object({
+              role: z.enum(["system", "user", "assistant"]),
+              content: z.string(),
+            })
+          ),
+          maxTokens: z.number().optional().default(512),
+          temperature: z.number().min(0).max(2).optional().default(0.7),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const result = await invokeAiWithFallback({
+          messages: input.messages,
+          maxTokens: input.maxTokens,
+          temperature: input.temperature,
+          timeoutMs: 8000,
+        });
+        return result;
+      }),
+  }),
+
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
