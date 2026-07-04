@@ -11,6 +11,9 @@ import {
   recordPlanetAttempt,
   getSessionAttempts,
 } from "./db";
+import { logFocusMetrics } from "./integrations/sheetsLogger";
+import { fireDopamineReport } from "./integrations/dopamineReport";
+import { parseCurriculumToQuests, parseGoogleDriveDocument } from "./integrations/curriculumParser";
 
 export const appRouter = router({
   system: systemRouter,
@@ -68,10 +71,12 @@ export const appRouter = router({
         return { xpAwarded };
       }),
 
-    // Complete a session and save final stats
+    // Complete a session, save final stats, log to Google Sheets, and fire Dopamine Report
     completeSession: publicProcedure
       .input(z.object({
         sessionId: z.number(),
+        studentId: z.string().default("anonymous"),
+        studentName: z.string().default("Space Explorer"),
         score: z.number(),
         xp: z.number(),
         starsEarned: z.number(),
@@ -80,6 +85,7 @@ export const appRouter = router({
         attentionDriftCount: z.number().default(0),
       }))
       .mutation(async ({ input }) => {
+        // 1. Update the game session in the database
         await updateGameSession(input.sessionId, {
           score: input.score,
           xp: input.xp,
@@ -90,7 +96,37 @@ export const appRouter = router({
           completed: 1,
           completedAt: new Date(),
         });
-        return { success: true };
+
+        // Calculate score percentage (max score = 8 planets × 200 pts = 1600)
+        const scorePercent = Math.min(100, (input.score / 1600) * 100);
+
+        // 2. Log metrics to Google Sheets Focus Tracker (non-blocking)
+        logFocusMetrics({
+          studentId: input.studentId,
+          studentName: input.studentName,
+          scorePercent,
+          timeSpentSec: input.timeSpentSec,
+          attentionDriftCount: input.attentionDriftCount,
+          correctCount: input.correctCount,
+          totalXP: input.xp,
+          starsEarned: input.starsEarned,
+          module: "Solar System Lab",
+        }).catch(err => console.error("[Router] Sheets log error:", err));
+
+        // 3. Fire Dopamine Report notification (non-blocking)
+        fireDopamineReport({
+          studentName: input.studentName,
+          studentId: input.studentId,
+          score: input.score,
+          scorePercent,
+          totalXP: input.xp,
+          starsEarned: input.starsEarned,
+          correctCount: input.correctCount,
+          timeSpentSec: input.timeSpentSec,
+          module: "Solar System Lab",
+        }).catch(err => console.error("[Router] Dopamine report error:", err));
+
+        return { success: true, scorePercent: Math.round(scorePercent) };
       }),
 
     // Get session details
@@ -104,6 +140,36 @@ export const appRouter = router({
     getLeaderboard: publicProcedure
       .query(async () => {
         return getTopSessions(10);
+      }),
+
+    // Get session attempts for a specific session
+    getAttempts: publicProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .query(async ({ input }) => {
+        return getSessionAttempts(input.sessionId);
+      }),
+  }),
+
+  // Curriculum parsing — AI-powered quest generation from uploaded content
+  curriculum: router({
+    // Parse raw text into structured quest JSON
+    parseText: publicProcedure
+      .input(z.object({
+        text: z.string().min(10),
+        moduleHint: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return parseCurriculumToQuests(input.text, input.moduleHint);
+      }),
+
+    // Parse a Google Drive document by file ID
+    parseGoogleDoc: publicProcedure
+      .input(z.object({
+        fileId: z.string(),
+        moduleHint: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        return parseGoogleDriveDocument(input.fileId, input.moduleHint);
       }),
   }),
 });

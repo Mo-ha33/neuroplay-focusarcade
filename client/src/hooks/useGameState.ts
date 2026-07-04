@@ -24,6 +24,7 @@ export interface PlacedPlanet {
 export interface GameState {
   phase: GamePhase;
   sessionId: number | null;
+  studentName: string;
   currentPlanetIndex: number; // which planet we're currently placing
   currentClueIndex: number;   // which clue is showing for the current planet
   placedPlanets: PlacedPlanet[];
@@ -55,6 +56,7 @@ export function useGameState() {
   const [state, setState] = useState<GameState>({
     phase: "welcome",
     sessionId: null,
+    studentName: "Space Explorer",
     currentPlanetIndex: 0,
     currentClueIndex: 0,
     placedPlanets: [],
@@ -86,6 +88,7 @@ export function useGameState() {
       ...prev,
       phase: "playing",
       sessionId,
+      studentName,
       currentPlanetIndex: 0,
       currentClueIndex: 0,
       placedPlanets: [],
@@ -219,12 +222,15 @@ export function useGameState() {
   }, []);
 
   // Complete the session and save to DB
-  const finalizeSession = useCallback(async () => {
+  const finalizeSession = useCallback(async (studentName = "Space Explorer") => {
     if (!state.sessionId || !state.startTime) return;
     const timeSpent = Math.floor((Date.now() - state.startTime) / 1000);
+    const studentId = `student_${state.sessionId}`;
     try {
       await completeSession.mutateAsync({
         sessionId: state.sessionId,
+        studentId,
+        studentName,
         score: state.score,
         xp: state.totalXP,
         starsEarned: state.totalStars,
@@ -240,7 +246,7 @@ export function useGameState() {
   // Auto-finalize when game completes
   useEffect(() => {
     if (state.phase === "completed") {
-      finalizeSession();
+      finalizeSession(state.studentName);
     }
   }, [state.phase]);
 
@@ -250,6 +256,7 @@ export function useGameState() {
     setState({
       phase: "welcome",
       sessionId: null,
+      studentName: "Space Explorer",
       currentPlanetIndex: 0,
       currentClueIndex: 0,
       placedPlanets: [],
