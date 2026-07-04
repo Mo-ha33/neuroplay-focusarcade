@@ -1,5 +1,9 @@
 import { COOKIE_NAME } from "@shared/const";
 import { invokeAiWithFallback } from "./aiResilience";
+import { rbacRouter } from "./routers/rbacRouter";
+import { teacherRouter } from "./routers/teacherRouter";
+import { parentRouter } from "./routers/parentRouter";
+import { adminRouter } from "./routers/adminRouter";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
@@ -18,6 +22,10 @@ import { parseCurriculumToQuests, parseGoogleDriveDocument } from "./integration
 
 export const appRouter = router({
   system: systemRouter,
+  rbac: rbacRouter,
+  teacher: teacherRouter,
+  parent: parentRouter,
+  admin: adminRouter,
 
   // ── AI Resilience: multi-model chat with Gemini → OpenRouter → Groq → static fallback
   ai: router({

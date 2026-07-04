@@ -1,22 +1,46 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import {
+  int,
+  mysqlEnum,
+  mysqlTable,
+  text,
+  timestamp,
+  varchar,
+} from "drizzle-orm/mysql-core";
 
 /**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
+ * NeuroPlay AI FocusArcade — Database Schema
+ * ==========================================
+ * Extended with 4-tier RBAC: admin | teacher | student | parent
+ *
+ * Relational structure:
+ *   admin ──< classrooms ──< student_profiles >── parent (users)
+ *                                │
+ *                                └──< game_sessions ──< planet_attempts
  */
+
+// ─── Users ────────────────────────────────────────────────────────────────────
+
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
+  /** Manus OAuth identifier (openId) returned from the OAuth callback. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  /**
+   * 4-tier role ENUM.
+   * - admin:   Full system access (Galactic Overseer)
+   * - teacher: Classroom management (Command Center)
+   * - student: Gamified learning (Space Lab)
+   * - parent:  Child focus metrics (Wellness Monitor)
+   */
+  role: mysqlEnum("role", ["admin", "teacher", "student", "parent"])
+    .default("student")
+    .notNull(),
+  /** Avatar emoji or DiceBear seed for student visual identity. */
+  avatarSeed: varchar("avatarSeed", { length: 64 }),
+  /** Space Passcode — 4-digit PIN for student frictionless login. */
+  spacePasscode: varchar("spacePasscode", { length: 8 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -25,7 +49,55 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// Game Sessions — tracks each student's play session
+// ─── Classrooms ───────────────────────────────────────────────────────────────
+
+export const classrooms = mysqlTable("classrooms", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 128 }).notNull(),
+  /** The teacher who owns this classroom. References users.id. */
+  teacherId: int("teacherId").notNull(),
+  /** Join code for students to self-enroll. */
+  joinCode: varchar("joinCode", { length: 8 }).notNull().unique(),
+  gradeLevel: varchar("gradeLevel", { length: 32 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Classroom = typeof classrooms.$inferSelect;
+export type InsertClassroom = typeof classrooms.$inferInsert;
+
+// ─── Student Profiles ─────────────────────────────────────────────────────────
+
+export const studentProfiles = mysqlTable("student_profiles", {
+  id: int("id").autoincrement().primaryKey(),
+  /** References users.id for the student. */
+  userId: int("userId").notNull().unique(),
+  /** References classrooms.id. */
+  classroomId: int("classroomId"),
+  /** References users.id for the parent/guardian. */
+  parentId: int("parentId"),
+  /** References users.id for the assigned teacher. */
+  teacherId: int("teacherId"),
+  /** Cumulative XP across all sessions. */
+  totalXP: int("totalXP").default(0).notNull(),
+  /** Total stars earned across all sessions. */
+  totalStars: int("totalStars").default(0).notNull(),
+  /** Total sessions completed. */
+  sessionsCompleted: int("sessionsCompleted").default(0).notNull(),
+  /** Cumulative focus time in seconds. */
+  totalFocusTimeSec: int("totalFocusTimeSec").default(0).notNull(),
+  /** Current streak in days. */
+  streakDays: int("streakDays").default(0).notNull(),
+  /** Highest single-session score. */
+  highScore: int("highScore").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StudentProfile = typeof studentProfiles.$inferSelect;
+export type InsertStudentProfile = typeof studentProfiles.$inferInsert;
+
+// ─── Game Sessions ────────────────────────────────────────────────────────────
+
 export const gameSessions = mysqlTable("game_sessions", {
   id: int("id").autoincrement().primaryKey(),
   studentId: varchar("studentId", { length: 64 }).notNull(),
@@ -45,7 +117,8 @@ export const gameSessions = mysqlTable("game_sessions", {
 export type GameSession = typeof gameSessions.$inferSelect;
 export type InsertGameSession = typeof gameSessions.$inferInsert;
 
-// Planet Attempts — tracks each drag-and-drop attempt
+// ─── Planet Attempts ──────────────────────────────────────────────────────────
+
 export const planetAttempts = mysqlTable("planet_attempts", {
   id: int("id").autoincrement().primaryKey(),
   sessionId: int("sessionId").notNull(),
