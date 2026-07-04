@@ -194,7 +194,7 @@ export function useGameState() {
         try {
           await recordAttempt.mutateAsync({
             sessionId: state.sessionId,
-            planetName: planet.name,
+            planetName: planet.name.en, // server stores canonical English name
             correct: planet.orbitOrder === targetOrbitSlot,
             attemptNumber: (attemptCountRef.current[planetId] || 1),
           });

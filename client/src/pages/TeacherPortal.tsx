@@ -7,18 +7,28 @@
 
 import { useLocation } from "wouter";
 import { useRbac } from "@/contexts/RbacContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { trpc } from "@/lib/trpc";
 import { TeacherUploadZone } from "@/components/uploads";
 
-const STATUS_CONFIG = {
+const STATUS_CONFIG_EN = {
   active:         { color: "#00E5FF", label: "Active",        dot: "🟢" },
   star:           { color: "#FFD700", label: "Star Student",  dot: "⭐" },
   "needs-support":{ color: "#FF6B6B", label: "Needs Support", dot: "🔴" },
+};
+const STATUS_CONFIG_AR = {
+  active:         { color: "#00E5FF", label: "نشط",           dot: "🟢" },
+  star:           { color: "#FFD700", label: "طالب متميز",    dot: "⭐" },
+  "needs-support":{ color: "#FF6B6B", label: "يحتاج دعم",    dot: "🔴" },
 };
 
 export default function TeacherPortal() {
   const { user, logout } = useRbac();
   const [, navigate] = useLocation();
+  const { t, isRTL, lang } = useLanguage();
+  const fontFamily = lang === "ar" ? "'Cairo', 'Almarai', sans-serif" : "'Comfortaa', 'Poppins', sans-serif";
+  const STATUS_CONFIG = lang === "ar" ? STATUS_CONFIG_AR : STATUS_CONFIG_EN;
 
   const statsQuery = trpc.teacher.getClassroomStats.useQuery();
   const studentsQuery = trpc.teacher.getStudentList.useQuery();
@@ -35,10 +45,11 @@ export default function TeacherPortal() {
 
   return (
     <div
+      dir={isRTL ? "rtl" : "ltr"}
       style={{
         minHeight: "100vh",
         background: "#0F172A",
-        fontFamily: "'Comfortaa', 'Poppins', sans-serif",
+        fontFamily,
         paddingBottom: 40,
       }}
     >
@@ -51,20 +62,22 @@ export default function TeacherPortal() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          flexDirection: isRTL ? "row-reverse" : "row",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexDirection: isRTL ? "row-reverse" : "row" }}>
           <span style={{ fontSize: 28 }}>👩‍🏫</span>
           <div>
-            <div style={{ color: "#7C4DFF", fontWeight: 700, fontSize: 15 }}>{user.name}</div>
-            <div style={{ color: "#64748B", fontSize: 11 }}>
-              {user.classroomName} · Code: <span style={{ color: "#00E5FF" }}>{user.classroomJoinCode}</span>
+            <div style={{ color: "#7C4DFF", fontWeight: 700, fontSize: 15, fontFamily }}>{user.name}</div>
+            <div style={{ color: "#64748B", fontSize: 11, fontFamily }}>
+              {user.classroomName} · {lang === "ar" ? "الكود:" : "Code:"} <span style={{ color: "#00E5FF" }}>{user.classroomJoinCode}</span>
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <div style={{ color: "#94A3B8", fontSize: 12 }}>
-            🟢 {stats?.activeToday ?? "—"} active today
+        <div style={{ display: "flex", gap: 12, alignItems: "center", flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <LanguageToggle compact />
+          <div style={{ color: "#94A3B8", fontSize: 12, fontFamily }}>
+            🟢 <span className="numeric-ltr">{stats?.activeToday ?? "—"}</span> {lang === "ar" ? "نشط اليوم" : "active today"}
           </div>
           <button
             onClick={logout}
@@ -76,16 +89,17 @@ export default function TeacherPortal() {
               fontSize: 11,
               padding: "5px 10px",
               cursor: "pointer",
+              fontFamily,
             }}
           >
-            Logout
+            {lang === "ar" ? "خروج" : "Logout"}
           </button>
         </div>
       </div>
 
       <div style={{ maxWidth: 960, margin: "0 auto", padding: "24px 20px" }}>
-        <h1 style={{ color: "#E2E8F0", fontSize: 20, fontWeight: 700, marginBottom: 20 }}>
-          🏫 Classroom Command Center
+        <h1 style={{ color: "#E2E8F0", fontSize: 20, fontWeight: 700, marginBottom: 20, fontFamily }}>
+          🏫 {t("teacher_title")}
         </h1>
 
         {/* AI Curriculum Ingestion Engine */}
@@ -94,12 +108,12 @@ export default function TeacherPortal() {
         {/* Stats Overview */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 28 }}>
           {[
-            { icon: "👥", label: "Students",       value: stats?.studentCount ?? "—",      color: "#00E5FF" },
-            { icon: "📊", label: "Avg Score",       value: stats ? `${stats.avgScore}%` : "—", color: "#7C4DFF" },
-            { icon: "🏆", label: "Top Performers",  value: stats?.topPerformers ?? "—",     color: "#FFD700" },
-            { icon: "🔴", label: "Needs Support",   value: stats?.needsSupport ?? "—",      color: "#FF6B6B" },
-            { icon: "🧠", label: "Brain Breaks",    value: stats?.totalBrainBreaks ?? "—",  color: "#AEEA00" },
-            { icon: "⚡", label: "Total XP",        value: stats ? `${(stats.totalXPAwarded / 1000).toFixed(1)}k` : "—", color: "#AEEA00" },
+            { icon: "👥", label: lang === "ar" ? "الطلاب" : "Students",       value: stats?.studentCount ?? "—",      color: "#00E5FF" },
+            { icon: "📊", label: lang === "ar" ? "متوسط الدرجات" : "Avg Score",  value: stats ? `${stats.avgScore}%` : "—", color: "#7C4DFF" },
+            { icon: "🏆", label: lang === "ar" ? "المتميزون" : "Top Performers", value: stats?.topPerformers ?? "—",     color: "#FFD700" },
+            { icon: "🔴", label: lang === "ar" ? "يحتاج دعم" : "Needs Support",  value: stats?.needsSupport ?? "—",      color: "#FF6B6B" },
+            { icon: "🧠", label: lang === "ar" ? "استراحات الدماغ" : "Brain Breaks", value: stats?.totalBrainBreaks ?? "—", color: "#AEEA00" },
+            { icon: "⚡", label: lang === "ar" ? "إجمالي XP" : "Total XP",       value: stats ? `${(stats.totalXPAwarded / 1000).toFixed(1)}k` : "—", color: "#AEEA00" },
           ].map(s => (
             <div
               key={s.label}
@@ -112,8 +126,8 @@ export default function TeacherPortal() {
               }}
             >
               <div style={{ fontSize: 22, marginBottom: 4 }}>{s.icon}</div>
-              <div style={{ color: s.color, fontWeight: 700, fontSize: 20 }}>{s.value}</div>
-              <div style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>{s.label}</div>
+              <div style={{ color: s.color, fontWeight: 700, fontSize: 20, fontFamily }} className="numeric-ltr">{s.value}</div>
+              <div style={{ color: "#64748B", fontSize: 11, marginTop: 2, fontFamily }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -128,8 +142,8 @@ export default function TeacherPortal() {
             marginBottom: 24,
           }}
         >
-          <h3 style={{ color: "#E2E8F0", fontSize: 14, fontWeight: 600, margin: "0 0 16px" }}>
-            📈 Weekly Engagement Trend
+          <h3 style={{ color: "#E2E8F0", fontSize: 14, fontWeight: 600, margin: "0 0 16px", fontFamily }}>
+            📈 {lang === "ar" ? "اتجاه المشاركة الأسبوعي" : "Weekly Engagement Trend"}
           </h3>
           <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 80 }}>
             {trend.map(day => {
@@ -164,15 +178,18 @@ export default function TeacherPortal() {
           }}
         >
           <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-            <h3 style={{ color: "#E2E8F0", fontSize: 14, fontWeight: 600, margin: 0 }}>
-              👨‍🎓 Student Roster — Live Engagement
+            <h3 style={{ color: "#E2E8F0", fontSize: 14, fontWeight: 600, margin: 0, fontFamily }}>
+              👨‍🎓 {lang === "ar" ? "قائمة الطلاب — المشاركة المباشرة" : "Student Roster — Live Engagement"}
             </h3>
           </div>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
                 <tr style={{ background: "rgba(255,255,255,0.03)" }}>
-                  {["Student", "Status", "Score", "XP", "Stars", "Sessions", "Brain Breaks", "Last Active"].map(h => (
+                  {(lang === "ar"
+                    ? ["الطالب", "الحالة", "الدرجة", "XP", "النجوم", "الجلسات", "استراحات الدماغ", "آخر نشاط"]
+                    : ["Student", "Status", "Score", "XP", "Stars", "Sessions", "Brain Breaks", "Last Active"]
+                  ).map(h => (
                     <th key={h} style={{ color: "#64748B", fontWeight: 600, padding: "10px 14px", textAlign: "left", fontSize: 11, whiteSpace: "nowrap" }}>
                       {h}
                     </th>

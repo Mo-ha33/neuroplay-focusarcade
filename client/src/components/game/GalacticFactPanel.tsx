@@ -12,7 +12,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchGalacticFact, type GalacticFact } from "../../lib/solarSystemApi";
-import { type Planet } from "../../data/planets";
+import { type Planet, localStr } from "../../data/planets";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface GalacticFactPanelProps {
   planet: Planet;
@@ -29,6 +30,8 @@ export function GalacticFactPanel({
   onDismiss,
   overlay = false,
 }: GalacticFactPanelProps) {
+  const { lang, isRTL } = useLanguage();
+  const fontFamily = lang === "ar" ? "'Cairo', 'Almarai', sans-serif" : "'Comfortaa', sans-serif";
   const [fact, setFact] = useState<GalacticFact | null>(null);
   const [loadState, setLoadState] = useState<LoadState>("loading");
 
@@ -119,11 +122,11 @@ export function GalacticFactPanel({
         <h3
           className="text-lg font-black"
           style={{
-            fontFamily: "'Poppins', sans-serif",
+            fontFamily,
             color: planet.color,
           }}
         >
-          {planet.name}
+          {localStr(planet.name, lang)}
         </h3>
       </div>
 
@@ -219,11 +222,12 @@ export function GalacticFactPanel({
             <p
               className="text-sm font-bold leading-relaxed"
               style={{
-                fontFamily: "'Comfortaa', sans-serif",
+                fontFamily,
                 color: "#E2E8F0",
+                direction: isRTL ? "rtl" : "ltr",
               }}
             >
-              🌟 {planet.funFact}
+              🌟 {localStr(planet.funFact, lang)}
             </p>
             <p
               className="text-xs mt-2"

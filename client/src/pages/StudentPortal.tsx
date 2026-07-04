@@ -10,6 +10,8 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useRbac } from "@/contexts/RbacContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { SpaceLabGame } from "@/components/game/SpaceLabGame";
 import { StudentUploadZone } from "@/components/uploads";
 
@@ -50,7 +52,7 @@ export default function StudentPortal() {
       style={{
         minHeight: "100vh",
         background: "#0F172A",
-        fontFamily: "'Comfortaa', 'Poppins', sans-serif",
+        fontFamily,
         padding: "0 0 40px",
         overflowX: "hidden",
       }}
@@ -64,27 +66,28 @@ export default function StudentPortal() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          flexDirection: isRTL ? "row-reverse" : "row",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexDirection: isRTL ? "row-reverse" : "row" }}>
           <span style={{ fontSize: 28 }}>{user.avatarEmoji}</span>
           <div>
-            <div style={{ color: "#00E5FF", fontWeight: 700, fontSize: 14 }}>{user.name}</div>
-            <div style={{ color: "#64748B", fontSize: 11 }}>{user.classroomName}</div>
+            <div style={{ color: "#00E5FF", fontWeight: 700, fontSize: 14, fontFamily }}>{user.name}</div>
+            <div style={{ color: "#64748B", fontSize: 11, fontFamily }}>{user.classroomName}</div>
           </div>
         </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ color: "#AEEA00", fontWeight: 700, fontSize: 16 }}>⚡ {user.totalXP}</div>
-            <div style={{ color: "#64748B", fontSize: 10 }}>XP</div>
+            <div style={{ color: "#AEEA00", fontWeight: 700, fontSize: 16 }}>⚡ <span className="numeric-ltr">{user.totalXP}</span></div>
+            <div style={{ color: "#64748B", fontSize: 10, fontFamily }}>{t("student_xp")}</div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ color: "#FFD700", fontWeight: 700, fontSize: 16 }}>⭐ {user.totalStars}</div>
-            <div style={{ color: "#64748B", fontSize: 10 }}>Stars</div>
+            <div style={{ color: "#FFD700", fontWeight: 700, fontSize: 16 }}>⭐ <span className="numeric-ltr">{user.totalStars}</span></div>
+            <div style={{ color: "#64748B", fontSize: 10, fontFamily }}>{t("student_badge")}</div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ color: "#FF6B6B", fontWeight: 700, fontSize: 16 }}>🔥 {user.streakDays}</div>
-            <div style={{ color: "#64748B", fontSize: 10 }}>Streak</div>
+            <div style={{ color: "#FF6B6B", fontWeight: 700, fontSize: 16 }}>🔥 <span className="numeric-ltr">{user.streakDays}</span></div>
+            <div style={{ color: "#64748B", fontSize: 10, fontFamily }}>{t("student_streak")}</div>
           </div>
           {/* Language toggle */}
           <button
@@ -114,6 +117,7 @@ export default function StudentPortal() {
               fontSize: 11,
               padding: "4px 8px",
               cursor: "pointer",
+              fontFamily,
             }}
           >
             {isRtl ? "خروج" : "Exit"}
@@ -137,10 +141,13 @@ export default function StudentPortal() {
               style={{
                 width: `${xpPercent}%`,
                 height: "100%",
-                background: "linear-gradient(90deg, #AEEA00, #00E5FF)",
+                background: isRTL
+                  ? "linear-gradient(270deg, #AEEA00, #00E5FF)"
+                  : "linear-gradient(90deg, #AEEA00, #00E5FF)",
                 borderRadius: 100,
                 transition: "width 1s ease",
                 boxShadow: "0 0 12px rgba(174,234,0,0.6)",
+                marginLeft: isRTL ? "auto" : undefined,
               }}
             />
           </div>
@@ -279,7 +286,7 @@ export default function StudentPortal() {
               padding: "16px 40px",
               cursor: "pointer",
               boxShadow: "0 0 30px rgba(0,229,255,0.4)",
-              fontFamily: "'Comfortaa', sans-serif",
+              fontFamily,
               transition: "transform 0.15s ease",
             }}
             onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.05)")}
@@ -319,7 +326,7 @@ export default function StudentPortal() {
           ))}
         </div>
 
-        {/* Daily Tip */}
+        {/* Brain Tip */}
         <div
           style={{
             background: "rgba(174,234,0,0.06)",

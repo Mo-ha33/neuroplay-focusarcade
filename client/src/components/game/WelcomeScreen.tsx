@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { StudentAvatar } from "./StudentAvatar";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface WelcomeScreenProps {
   onStart: (name: string) => void;
@@ -9,13 +10,31 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onStart, isLoading }: WelcomeScreenProps) {
   const [name, setName] = useState("");
+  const { lang, isRTL } = useLanguage();
+  const fontFamily = lang === "ar" ? "'Cairo', 'Almarai', sans-serif" : "'Comfortaa', sans-serif";
+
+  const labels = {
+    subtitle: lang === "ar" ? "مختبر النظام الشمسي 🌌" : "Solar System Space Lab 🌌",
+    missionTitle: lang === "ar" ? "مهمتك:" : "Your Mission:",
+    missionBody: lang === "ar"
+      ? "اسحب كل كوكب إلى مداره الصحيح حول الشمس! 🌟"
+      : "Drag each planet to its correct orbit around the Sun! 🌟",
+    nameLabel: lang === "ar" ? "ما اسمك يا مستكشف الفضاء؟" : "What's your name, Space Explorer?",
+    namePlaceholder: lang === "ar" ? "أدخل اسمك..." : "Enter your name...",
+    launch: lang === "ar" ? "🚀 انطلق في المهمة!" : "🚀 Launch Mission!",
+    launching: lang === "ar" ? "جارٍ الإطلاق..." : "Launching...",
+    defaultName: lang === "ar" ? "مستكشف الفضاء" : "Space Explorer",
+  };
 
   const handleStart = () => {
-    onStart(name.trim() || "Space Explorer");
+    onStart(name.trim() || labels.defaultName);
   };
 
   return (
-    <div className="min-h-screen star-field flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div
+      className="min-h-screen star-field flex flex-col items-center justify-center p-6 relative overflow-hidden"
+      dir={isRTL ? "rtl" : "ltr"}
+    >
       {/* Decorative orbiting dots */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {[...Array(20)].map((_, i) => (
@@ -54,18 +73,18 @@ export function WelcomeScreen({ onStart, isLoading }: WelcomeScreenProps) {
           <h1
             className="text-4xl font-black text-glow-cyan mb-2"
             style={{
-              fontFamily: "'Poppins', sans-serif",
+              fontFamily: lang === "ar" ? "'Cairo', sans-serif" : "'Poppins', sans-serif",
               color: "#00E5FF",
-              letterSpacing: "-0.02em",
+              letterSpacing: lang === "ar" ? "0" : "-0.02em",
             }}
           >
             NeuroPlay AI
           </h1>
           <p
             className="text-xl font-bold"
-            style={{ fontFamily: "'Comfortaa', sans-serif", color: "#7C4DFF" }}
+            style={{ fontFamily, color: "#7C4DFF" }}
           >
-            Solar System Space Lab 🌌
+            {labels.subtitle}
           </p>
         </div>
 
@@ -83,15 +102,15 @@ export function WelcomeScreen({ onStart, isLoading }: WelcomeScreenProps) {
         >
           <p
             className="text-lg font-semibold mb-1"
-            style={{ fontFamily: "'Comfortaa', sans-serif", color: "#E2E8F0" }}
+            style={{ fontFamily, color: "#E2E8F0" }}
           >
-            Your Mission:
+            {labels.missionTitle}
           </p>
           <p
             className="text-base"
-            style={{ fontFamily: "'Comfortaa', sans-serif", color: "#94A3B8" }}
+            style={{ fontFamily, color: "#94A3B8" }}
           >
-            Drag each planet to its correct orbit around the Sun! 🌟
+            {labels.missionBody}
           </p>
         </motion.div>
 
@@ -104,9 +123,9 @@ export function WelcomeScreen({ onStart, isLoading }: WelcomeScreenProps) {
         >
           <label
             className="block text-sm font-bold mb-2 text-center"
-            style={{ fontFamily: "'Comfortaa', sans-serif", color: "#94A3B8" }}
+            style={{ fontFamily, color: "#94A3B8" }}
           >
-            What's your name, Space Explorer?
+            {labels.nameLabel}
           </label>
           {/* Live avatar preview — updates as user types */}
           {name.trim().length > 0 && (
@@ -123,11 +142,12 @@ export function WelcomeScreen({ onStart, isLoading }: WelcomeScreenProps) {
             value={name}
             onChange={e => setName(e.target.value)}
             onKeyDown={e => e.key === "Enter" && handleStart()}
-            placeholder="Enter your name..."
+            placeholder={labels.namePlaceholder}
             maxLength={30}
+            dir={isRTL ? "rtl" : "ltr"}
             className="w-full px-5 py-4 rounded-2xl text-center text-lg font-bold outline-none transition-all duration-200"
             style={{
-              fontFamily: "'Comfortaa', sans-serif",
+              fontFamily,
               background: "rgba(15, 23, 42, 0.8)",
               border: "2px solid rgba(124, 77, 255, 0.5)",
               color: "#E2E8F0",
@@ -152,14 +172,14 @@ export function WelcomeScreen({ onStart, isLoading }: WelcomeScreenProps) {
           disabled={isLoading}
           className="w-full py-5 rounded-2xl text-xl font-black transition-all duration-200 relative overflow-hidden"
           style={{
-            fontFamily: "'Poppins', sans-serif",
+            fontFamily: lang === "ar" ? "'Cairo', sans-serif" : "'Poppins', sans-serif",
             background: "linear-gradient(135deg, #00E5FF, #7C4DFF)",
             color: "#0F172A",
             boxShadow: "0 0 30px rgba(0, 229, 255, 0.4), 0 4px 20px rgba(0,0,0,0.3)",
             border: "none",
           }}
         >
-          {isLoading ? "Launching..." : "🚀 Launch Mission!"}
+          {isLoading ? labels.launching : labels.launch}
         </motion.button>
 
         {/* Planet preview */}

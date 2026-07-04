@@ -7,14 +7,22 @@
 
 import { useLocation } from "wouter";
 import { useRbac } from "@/contexts/RbacContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { trpc } from "@/lib/trpc";
 import { ParentUploadZone } from "@/components/uploads";
 
-const MOOD_CONFIG = {
-  superstar:   { emoji: "🌟", label: "Superstar!",   color: "#FFD700" },
-  focused:     { emoji: "🎯", label: "Focused",       color: "#00E5FF" },
-  good:        { emoji: "✅", label: "Good Session",  color: "#AEEA00" },
-  "needs-break":{ emoji: "😮‍💨", label: "Needed Breaks", color: "#FF6B6B" },
+const MOOD_CONFIG_EN = {
+  superstar:   { emoji: "🌟", label: "Superstar!",    color: "#FFD700" },
+  focused:     { emoji: "🎯", label: "Focused",        color: "#00E5FF" },
+  good:        { emoji: "✅", label: "Good Session",   color: "#AEEA00" },
+  "needs-break":{ emoji: "😮‍💨", label: "Needed Breaks",  color: "#FF6B6B" },
+};
+const MOOD_CONFIG_AR = {
+  superstar:   { emoji: "🌟", label: "نجم متألق!",    color: "#FFD700" },
+  focused:     { emoji: "🎯", label: "مركز",           color: "#00E5FF" },
+  good:        { emoji: "✅", label: "جلسة جيدة",     color: "#AEEA00" },
+  "needs-break":{ emoji: "😮‍💨", label: "احتاج استراحات",  color: "#FF6B6B" },
 };
 
 function formatTime(sec: number): string {
@@ -27,6 +35,9 @@ function formatTime(sec: number): string {
 export default function ParentPortal() {
   const { user, logout } = useRbac();
   const [, navigate] = useLocation();
+  const { t, isRTL, lang } = useLanguage();
+  const fontFamily = lang === "ar" ? "'Cairo', 'Almarai', sans-serif" : "'Comfortaa', 'Poppins', sans-serif";
+  const MOOD_CONFIG = lang === "ar" ? MOOD_CONFIG_AR : MOOD_CONFIG_EN;
 
   const metricsQuery = trpc.parent.getChildMetrics.useQuery();
   const sessionsQuery = trpc.parent.getChildSessions.useQuery();
@@ -43,10 +54,11 @@ export default function ParentPortal() {
 
   return (
     <div
+      dir={isRTL ? "rtl" : "ltr"}
       style={{
         minHeight: "100vh",
         background: "#0F172A",
-        fontFamily: "'Comfortaa', 'Poppins', sans-serif",
+        fontFamily,
         paddingBottom: 40,
       }}
     >
@@ -59,17 +71,20 @@ export default function ParentPortal() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          flexDirection: isRTL ? "row-reverse" : "row",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexDirection: isRTL ? "row-reverse" : "row" }}>
           <span style={{ fontSize: 28 }}>👨‍👩‍👦</span>
           <div>
-            <div style={{ color: "#AEEA00", fontWeight: 700, fontSize: 15 }}>{user.name}</div>
-            <div style={{ color: "#64748B", fontSize: 11 }}>
-              Monitoring: <span style={{ color: "#00E5FF" }}>{user.childName}</span>
+            <div style={{ color: "#AEEA00", fontWeight: 700, fontSize: 15, fontFamily }}>{user.name}</div>
+            <div style={{ color: "#64748B", fontSize: 11, fontFamily }}>
+              {lang === "ar" ? "مراقبة:" : "Monitoring:"} <span style={{ color: "#00E5FF" }}>{user.childName}</span>
             </div>
           </div>
         </div>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <LanguageToggle compact />
         <button
           onClick={logout}
           style={{
@@ -80,18 +95,20 @@ export default function ParentPortal() {
             fontSize: 11,
             padding: "5px 10px",
             cursor: "pointer",
+            fontFamily,
           }}
         >
-          Logout
+          {lang === "ar" ? "خروج" : "Logout"}
         </button>
+        </div>
       </div>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "24px 20px" }}>
-        <h1 style={{ color: "#E2E8F0", fontSize: 20, fontWeight: 700, marginBottom: 6 }}>
-          🌱 Focus & Wellness Monitor
+        <h1 style={{ color: "#E2E8F0", fontSize: 20, fontWeight: 700, marginBottom: 6, fontFamily }}>
+          🌱 {t("parent_title")}
         </h1>
-        <p style={{ color: "#64748B", fontSize: 13, marginBottom: 24 }}>
-          {metrics?.childName}'s learning journey at a glance
+        <p style={{ color: "#64748B", fontSize: 13, marginBottom: 24, fontFamily }}>
+          {metrics?.childName}{lang === "ar" ? " — رحلة التعلم" : "'s learning journey at a glance"}
         </p>
 
         {/* IEP & Clinical Report Upload */}
@@ -100,9 +117,9 @@ export default function ParentPortal() {
         {/* Key Metrics */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12, marginBottom: 24 }}>
           {[
-            { icon: "⚡", label: "Total XP",       value: metrics?.totalXP ?? "—",                        color: "#AEEA00" },
-            { icon: "⭐", label: "Stars Earned",    value: metrics?.totalStars ?? "—",                     color: "#FFD700" },
-            { icon: "🎮", label: "Sessions Done",   value: metrics?.sessionsCompleted ?? "—",              color: "#00E5FF" },
+            { icon: "⚡", label: lang === "ar" ? "إجمالي XP" : "Total XP",       value: metrics?.totalXP ?? "—",                        color: "#AEEA00" },
+            { icon: "⭐", label: lang === "ar" ? "النجوم المكتسبة" : "Stars Earned",    value: metrics?.totalStars ?? "—",                     color: "#FFD700" },
+            { icon: "🎮", label: lang === "ar" ? "الجلسات" : "Sessions Done",   value: metrics?.sessionsCompleted ?? "—",              color: "#00E5FF" },
             { icon: "🔥", label: "Day Streak",      value: metrics ? `${metrics.streakDays} days` : "—",  color: "#FF6B6B" },
             { icon: "🧠", label: "Focus Time",      value: metrics ? formatTime(metrics.totalFocusTimeSec ?? 0) : "—", color: "#7C4DFF" },
             { icon: "📊", label: "Avg Score",       value: metrics ? `${metrics.avgScore}%` : "—",        color: "#00E5FF" },

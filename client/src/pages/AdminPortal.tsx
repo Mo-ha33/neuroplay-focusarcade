@@ -7,6 +7,8 @@
 
 import { useLocation } from "wouter";
 import { useRbac } from "@/contexts/RbacContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { trpc } from "@/lib/trpc";
 
 const ROLE_BADGE: Record<string, { color: string; bg: string }> = {
@@ -25,6 +27,8 @@ const STATUS_DOT: Record<string, string> = {
 export default function AdminPortal() {
   const { user, logout } = useRbac();
   const [, navigate] = useLocation();
+  const { t, isRTL, lang } = useLanguage();
+  const fontFamily = lang === "ar" ? "'Cairo', 'Almarai', sans-serif" : "'Comfortaa', 'Poppins', sans-serif";
 
   const overviewQuery = trpc.admin.getSystemOverview.useQuery();
   const usersQuery = trpc.admin.getAllUsers.useQuery();
@@ -47,10 +51,11 @@ export default function AdminPortal() {
 
   return (
     <div
+      dir={isRTL ? "rtl" : "ltr"}
       style={{
         minHeight: "100vh",
         background: "#0F172A",
-        fontFamily: "'Comfortaa', 'Poppins', sans-serif",
+        fontFamily,
         paddingBottom: 40,
       }}
     >
@@ -63,16 +68,18 @@ export default function AdminPortal() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          flexDirection: isRTL ? "row-reverse" : "row",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexDirection: isRTL ? "row-reverse" : "row" }}>
           <span style={{ fontSize: 28 }}>🛡️</span>
           <div>
-            <div style={{ color: "#FF6B6B", fontWeight: 700, fontSize: 15 }}>{user.name}</div>
-            <div style={{ color: "#64748B", fontSize: 11 }}>System Administrator · NeuroPlay AI</div>
+            <div style={{ color: "#FF6B6B", fontWeight: 700, fontSize: 15, fontFamily }}>{user.name}</div>
+            <div style={{ color: "#64748B", fontSize: 11, fontFamily }}>{lang === "ar" ? "مشرف النظام · نيوروبلاي AI" : "System Administrator · NeuroPlay AI"}</div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <LanguageToggle compact />
           <div style={{
             background: "rgba(174,234,0,0.1)",
             border: "1px solid rgba(174,234,0,0.3)",

@@ -1,66 +1,67 @@
 /**
- * NeuroPlay AI FocusArcade — Unified Login Page
- * ===============================================
- * A single login view with 4 role-selector cards.
- * Each role has a distinct visual identity and Space Passcode.
- * Demo passcodes are shown on-screen for hackathon judges.
+ * Login.tsx — Unified RBAC Login Page (Bilingual EN/AR)
+ * ======================================================
+ * 4-role selector with Space Passcode entry.
+ * Language toggle in header switches between EN (LTR) and AR (RTL).
  */
 
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useRbac } from "@/contexts/RbacContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import type { RbacRole } from "../../../server/routers/rbacRouter";
 
 const ROLE_CONFIG: Record<RbacRole, {
   emoji: string;
-  label: string;
-  tagline: string;
+  labelKey: "login_student_label" | "login_teacher_label" | "login_parent_label" | "login_admin_label";
+  taglineKey: "login_student_tagline" | "login_teacher_tagline" | "login_parent_tagline" | "login_admin_tagline";
+  descKey: "login_portal_subtitle_student" | "login_portal_subtitle_teacher" | "login_portal_subtitle_parent" | "login_portal_subtitle_admin";
   color: string;
   bg: string;
   border: string;
   demoPasscode: string;
-  description: string;
 }> = {
   student: {
     emoji: "🧑‍🚀",
-    label: "Student",
-    tagline: "Space Explorer",
+    labelKey: "login_student_label",
+    taglineKey: "login_student_tagline",
+    descKey: "login_portal_subtitle_student",
     color: "#00E5FF",
     bg: "rgba(0,229,255,0.08)",
     border: "rgba(0,229,255,0.4)",
     demoPasscode: "1234",
-    description: "Jump into your Space Lab mission!",
   },
   teacher: {
     emoji: "👩‍🏫",
-    label: "Teacher",
-    tagline: "Classroom Commander",
+    labelKey: "login_teacher_label",
+    taglineKey: "login_teacher_tagline",
+    descKey: "login_portal_subtitle_teacher",
     color: "#7C4DFF",
     bg: "rgba(124,77,255,0.08)",
     border: "rgba(124,77,255,0.4)",
     demoPasscode: "5678",
-    description: "View your class progress & missions.",
   },
   parent: {
     emoji: "👨‍👩‍👦",
-    label: "Parent",
-    tagline: "Focus Guardian",
+    labelKey: "login_parent_label",
+    taglineKey: "login_parent_tagline",
+    descKey: "login_portal_subtitle_parent",
     color: "#AEEA00",
     bg: "rgba(174,234,0,0.08)",
     border: "rgba(174,234,0,0.4)",
     demoPasscode: "9012",
-    description: "Track your child's focus journey.",
   },
   admin: {
     emoji: "🛡️",
-    label: "Admin",
-    tagline: "Galactic Overseer",
+    labelKey: "login_admin_label",
+    taglineKey: "login_admin_tagline",
+    descKey: "login_portal_subtitle_admin",
     color: "#FF6B6B",
     bg: "rgba(255,107,107,0.08)",
     border: "rgba(255,107,107,0.4)",
     demoPasscode: "0000",
-    description: "System-wide analytics & management.",
   },
 };
 
@@ -74,8 +75,10 @@ export default function Login() {
   const { login } = useRbac();
   const [, navigate] = useLocation();
   const demoLogin = trpc.rbac.demoLogin.useMutation();
+  const { t, isRTL, lang } = useLanguage();
 
   const cfg = ROLE_CONFIG[selectedRole];
+  const fontFamily = lang === "ar" ? "'Cairo', 'Almarai', sans-serif" : "'Comfortaa', 'Poppins', sans-serif";
 
   const handleRoleSelect = (role: RbacRole) => {
     setSelectedRole(role);
@@ -124,6 +127,7 @@ export default function Login() {
 
   return (
     <div
+      dir={isRTL ? "rtl" : "ltr"}
       style={{
         minHeight: "100vh",
         background: "#0F172A",
@@ -132,24 +136,36 @@ export default function Login() {
         alignItems: "center",
         justifyContent: "center",
         padding: "24px 16px",
-        fontFamily: "'Comfortaa', 'Poppins', sans-serif",
+        fontFamily,
       }}
     >
+      {/* Language Toggle — top right (flips to top left in RTL) */}
+      <div
+        style={{
+          position: "fixed",
+          top: 16,
+          [isRTL ? "left" : "right"]: 16,
+          zIndex: 100,
+        }}
+      >
+        <LanguageToggle />
+      </div>
+
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: 32 }}>
         <div style={{ fontSize: 48, marginBottom: 8 }}>🚀</div>
-        <h1 style={{ color: "#00E5FF", fontSize: 28, fontWeight: 700, margin: 0 }}>
-          NeuroPlay AI
+        <h1 style={{ color: "#00E5FF", fontSize: 28, fontWeight: 700, margin: 0, fontFamily }}>
+          {t("login_title")}
         </h1>
-        <p style={{ color: "#94A3B8", fontSize: 14, margin: "4px 0 0" }}>
-          FocusArcade — Solar System Lab
+        <p style={{ color: "#94A3B8", fontSize: 14, margin: "4px 0 0", fontFamily }}>
+          {t("login_subtitle")}
         </p>
       </div>
 
       {/* Role Selector */}
       <div style={{ marginBottom: 24, width: "100%", maxWidth: 480 }}>
-        <p style={{ color: "#94A3B8", textAlign: "center", fontSize: 13, marginBottom: 12 }}>
-          Who are you today?
+        <p style={{ color: "#94A3B8", textAlign: "center", fontSize: 13, marginBottom: 12, fontFamily }}>
+          {t("login_who")}
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {ROLES.map(role => {
@@ -168,14 +184,15 @@ export default function Login() {
                   transition: "all 0.2s ease",
                   textAlign: "center",
                   boxShadow: isSelected ? `0 0 20px ${c.color}33` : "none",
+                  fontFamily,
                 }}
               >
                 <div style={{ fontSize: 28, marginBottom: 4 }}>{c.emoji}</div>
-                <div style={{ color: isSelected ? c.color : "#CBD5E1", fontWeight: 600, fontSize: 14 }}>
-                  {c.label}
+                <div style={{ color: isSelected ? c.color : "#CBD5E1", fontWeight: 600, fontSize: 14, fontFamily }}>
+                  {t(c.labelKey)}
                 </div>
-                <div style={{ color: "#64748B", fontSize: 11, marginTop: 2 }}>
-                  {c.tagline}
+                <div style={{ color: "#64748B", fontSize: 11, marginTop: 2, fontFamily }}>
+                  {t(c.taglineKey)}
                 </div>
               </button>
             );
@@ -197,16 +214,16 @@ export default function Login() {
       >
         <div style={{ textAlign: "center", marginBottom: 20 }}>
           <div style={{ fontSize: 40 }}>{cfg.emoji}</div>
-          <h2 style={{ color: cfg.color, fontSize: 18, fontWeight: 700, margin: "8px 0 4px" }}>
-            {cfg.label} Portal
+          <h2 style={{ color: cfg.color, fontSize: 18, fontWeight: 700, margin: "8px 0 4px", fontFamily }}>
+            {t(cfg.labelKey)} Portal
           </h2>
-          <p style={{ color: "#94A3B8", fontSize: 13, margin: 0 }}>{cfg.description}</p>
+          <p style={{ color: "#94A3B8", fontSize: 13, margin: 0, fontFamily }}>{t(cfg.descKey)}</p>
         </div>
 
         {/* Passcode dots */}
         <div style={{ textAlign: "center", marginBottom: 16 }}>
-          <p style={{ color: "#64748B", fontSize: 12, marginBottom: 10 }}>
-            Enter your Space Passcode 🔑
+          <p style={{ color: "#64748B", fontSize: 12, marginBottom: 10, fontFamily }}>
+            {t("login_enter_passcode")}
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: 12, marginBottom: 8 }}>
             {[0, 1, 2, 3].map(i => (
@@ -225,12 +242,15 @@ export default function Login() {
             ))}
           </div>
           {error && (
-            <p style={{ color: "#FF6B6B", fontSize: 12, marginTop: 6 }}>{error}</p>
+            <p style={{ color: "#FF6B6B", fontSize: 12, marginTop: 6, fontFamily }}>{error}</p>
           )}
         </div>
 
-        {/* Number pad */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+        {/* Number pad — digits always LTR regardless of language */}
+        <div
+          dir="ltr"
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}
+        >
           {["1","2","3","4","5","6","7","8","9","←","0","✓"].map(key => (
             <button
               key={key}
@@ -272,9 +292,9 @@ export default function Login() {
             textAlign: "center",
           }}
         >
-          <p style={{ color: "#64748B", fontSize: 11, margin: 0 }}>
-            🎯 Demo passcode for <span style={{ color: cfg.color }}>{cfg.label}</span>:{" "}
-            <span style={{ color: "#E2E8F0", fontWeight: 700, letterSpacing: 3 }}>
+          <p style={{ color: "#64748B", fontSize: 11, margin: 0, fontFamily }}>
+            🎯 {t("login_demo_hint")} <span style={{ color: cfg.color }}>{t(cfg.labelKey)}</span>:{" "}
+            <span style={{ color: "#E2E8F0", fontWeight: 700, letterSpacing: 3, direction: "ltr", display: "inline-block" }}>
               {cfg.demoPasscode}
             </span>
           </p>
@@ -282,7 +302,7 @@ export default function Login() {
       </div>
 
       {/* Footer */}
-      <p style={{ color: "#334155", fontSize: 11, marginTop: 24, textAlign: "center" }}>
+      <p style={{ color: "#334155", fontSize: 11, marginTop: 24, textAlign: "center", fontFamily }}>
         NeuroPlay AI FocusArcade · ADHD-Friendly Learning · Solar System Lab MVP
       </p>
     </div>
