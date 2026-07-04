@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Planet } from "../../data/planets";
+import { AudioReadButton } from "./AudioReadButton";
+import { GalacticFactPanel } from "./GalacticFactPanel";
 
 interface ClueCardProps {
   planet: Planet;
@@ -13,13 +16,15 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
   const hasMoreClues = clueIndex < planet.clues.length - 1;
   const clueNumber = clueIndex + 1;
   const totalClues = planet.clues.length;
+  const isLastClue = clueIndex === planet.clues.length - 1;
+  const [showFact, setShowFact] = useState(false);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className="w-full max-w-sm mx-auto"
+      className="w-full max-w-sm mx-auto flex flex-col gap-3"
     >
       <div
         className="rounded-3xl p-6 flex flex-col gap-4"
@@ -86,10 +91,10 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="text-center"
+            className="flex flex-col items-center gap-3"
           >
             <p
-              className="text-xl font-bold leading-relaxed"
+              className="text-xl font-bold leading-relaxed text-center"
               style={{
                 fontFamily: "'Comfortaa', sans-serif",
                 color: "#E2E8F0",
@@ -98,6 +103,8 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
             >
               {currentClue}
             </p>
+            {/* 🔊 TTS Audio Read Button — accessibility for neurodivergent learners */}
+            <AudioReadButton text={currentClue} label="Listen to Clue" size="sm" />
           </motion.div>
         </AnimatePresence>
 
@@ -134,6 +141,28 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
           </motion.button>
         )}
 
+        {/* 📡 Galactic Fact reveal — only on last clue */}
+        {isLastClue && !showFact && (
+          <motion.button
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setShowFact(true)}
+            className="w-full py-2.5 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+            style={{
+              fontFamily: "'Comfortaa', sans-serif",
+              background: "rgba(0, 229, 255, 0.08)",
+              border: "1.5px solid rgba(0, 229, 255, 0.3)",
+              color: "#00E5FF",
+            }}
+          >
+            <span>📡</span>
+            <span>Galactic Fact</span>
+          </motion.button>
+        )}
+
         {/* Drag instruction */}
         <p
           className="text-center text-xs font-semibold"
@@ -145,6 +174,17 @@ export function ClueCard({ planet, clueIndex, onNextClue, attemptCount }: ClueCa
           Drag me to the right orbit! ☝️
         </p>
       </div>
+
+      {/* 📡 Galactic Fact Panel (Solar System Open API) */}
+      <AnimatePresence>
+        {showFact && (
+          <GalacticFactPanel
+            planet={planet}
+            onDismiss={() => setShowFact(false)}
+            overlay={false}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { PLANETS } from "../../data/planets";
+import { StudentAvatar } from "./StudentAvatar";
 
 interface GameHUDProps {
   correctCount: number;
@@ -38,14 +39,18 @@ export function GameHUD({ correctCount, totalXP, totalStars, score, studentName 
         borderBottom: "1px solid rgba(0, 229, 255, 0.15)",
       }}
     >
-      {/* Top row: name + stats */}
+      {/* Top row: DiceBear avatar + name + stats */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <span
-          className="text-sm font-bold truncate max-w-[120px]"
-          style={{ fontFamily: "'Comfortaa', sans-serif", color: "#64748B" }}
-        >
-          👨‍🚀 {studentName}
-        </span>
+        <div className="flex items-center gap-2 min-w-0">
+          {/* DiceBear sci-fi avatar generated from student name */}
+          <StudentAvatar seed={studentName} size={32} glow={false} />
+          <span
+            className="text-sm font-bold truncate max-w-[100px]"
+            style={{ fontFamily: "'Comfortaa', sans-serif", color: "#64748B" }}
+          >
+            {studentName}
+          </span>
+        </div>
 
         <div className="flex items-center gap-3">
           {/* Stars */}
