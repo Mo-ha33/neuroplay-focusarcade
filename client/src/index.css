@@ -144,6 +144,11 @@
   /* NeuroPlay Font Utilities */
   .font-comfortaa { font-family: 'Comfortaa', sans-serif; }
   .font-poppins { font-family: 'Poppins', sans-serif; }
+  .font-cairo { font-family: 'Cairo', sans-serif; }
+
+  /* RTL support: Arabic text uses Cairo for optimal rendering */
+  [dir="rtl"] { font-family: 'Cairo', 'Comfortaa', sans-serif; }
+  [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3 { font-family: 'Cairo', sans-serif; }
 
   /* Neon glow effects */
   .glow-cyan {
