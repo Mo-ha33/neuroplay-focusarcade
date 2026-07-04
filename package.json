@@ -10,7 +10,8 @@
     "check": "tsc --noEmit",
     "format": "prettier --write .",
     "test": "vitest run",
-    "db:push": "drizzle-kit generate && drizzle-kit migrate"
+    "db:push": "drizzle-kit generate && drizzle-kit migrate",
+    "seed:mock": "tsx scripts/seed-mock-data.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.8",
@@ -49,6 +50,8 @@
     "@trpc/react-query": "^11.6.0",
     "@trpc/server": "^11.6.0",
     "@types/canvas-confetti": "^1.9.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/react-dropzone": "^5.1.0",
     "ai": "^7.0.15",
     "axios": "^1.12.0",
     "canvas-confetti": "^1.9.4",
@@ -62,12 +65,14 @@
     "embla-carousel-react": "^8.6.0",
     "express": "^4.21.2",
     "framer-motion": "^12.23.22",
+    "googleapis": "^173.0.0",
     "input-otp": "^1.4.2",
     "jose": "6.1.0",
     "lucide-react": "^0.453.0",
     "mysql2": "^3.15.0",
     "nanoid": "^5.1.5",
     "next-themes": "^0.4.6",
+    "qrcode": "^1.5.4",
     "react": "^19.2.1",
     "react-day-picker": "^9.11.1",
     "react-dom": "^19.2.1",
@@ -80,7 +85,6 @@
     "superjson": "^1.13.3",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
-    "uploadthing": "^7.7.4",
     "vaul": "^1.1.2",
     "wouter": "^3.3.5",
     "zod": "^4.1.12"

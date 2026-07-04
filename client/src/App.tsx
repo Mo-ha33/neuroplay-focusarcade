@@ -12,22 +12,22 @@ import StudentPortal from "./pages/StudentPortal";
 import TeacherPortal from "./pages/TeacherPortal";
 import ParentPortal from "./pages/ParentPortal";
 import AdminPortal from "./pages/AdminPortal";
+import NeuroPlayHub from "./pages/NeuroPlayHub";
 
 function Router() {
   return (
     <Switch>
-      {/* Default: SpaceLab game (unauthenticated entry point) */}
-      <Route path={"/"} component={Home} />
-
+      {/* NeuroPlayHub: unified hackathon experience (default landing) */}
+      <Route path={"/"} component={NeuroPlayHub} />
+      {/* SpaceLab standalone game */}
+      <Route path={"/spacelab"} component={Home} />
       {/* RBAC Login — unified role-selector login page */}
       <Route path={"/login"} component={Login} />
-
       {/* Role-specific portals */}
       <Route path={"/student"} component={StudentPortal} />
       <Route path={"/teacher"} component={TeacherPortal} />
       <Route path={"/parent"} component={ParentPortal} />
       <Route path={"/admin"} component={AdminPortal} />
-
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
